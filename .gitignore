@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+**/bin/
+**/obj/
+
+# Test results
+[Tt]est[Rr]estult*/
+[Bb]uild[Ll]og.*
+
+# Temporary files
+*.tmp
+*.bak
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
