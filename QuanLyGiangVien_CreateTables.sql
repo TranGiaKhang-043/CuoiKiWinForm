@@ -1,3 +1,9 @@
+IF DB_ID(N'QuanLyGiangVien') IS NULL
+BEGIN
+    CREATE DATABASE QuanLyGiangVien;
+END
+GO
+
 USE QuanLyGiangVien;
 GO
 -- TẠO BẢNG --
@@ -6,7 +12,7 @@ CREATE TABLE KHOA
     MaKhoa INT IDENTITY(1,1) PRIMARY KEY,
     TenKhoa NVARCHAR(100) NOT NULL,
     Email VARCHAR(100) NULL,
-    SoDienThoai VARCHAR(15) NULL,
+    SoDienThoai VARCHAR(15) NULL UNIQUE,
     TrangThai BIT NOT NULL DEFAULT 1
 );
 GO
@@ -122,7 +128,7 @@ GO
 CREATE TABLE HOC_KY
 (
     MaHocKy INT IDENTITY(1,1) PRIMARY KEY,
-    TenHocKy NVARCHAR(50) NOT NULL UNIQUE
+    TenHocKy NVARCHAR(50) NOT NULL
 );
 GO
 
@@ -413,13 +419,17 @@ INSERT INTO GIANG_VIEN_CHUYEN_MON
 VALUES
 (1, 1, 1),
 (1, 2, 0),
-(1, 3, 1),
+(1, 3, 0),
+
 (2, 3, 1),
 (2, 5, 0),
+
 (3, 5, 1),
-(3, 6, 1),
+(3, 6, 0),
+
 (4, 2, 1),
 (4, 4, 0),
+
 (5, 3, 1);
 GO
 
@@ -530,6 +540,91 @@ VALUES
 (N'Báo cáo thống kê', 'FrmBaoCao');
 GO
 
+-- UPDATE LẠI PHẦN CHỨC NĂNG CỦA DỮ LIỆU MẪU 
+
+USE QuanLyGiangVien;
+GO
+
+UPDATE CHUC_NANG
+SET TenChucNang = N'Quản lý giảng viên',
+    MaForm = 'frmLecturer'
+WHERE MaChucNang = 1;
+
+UPDATE CHUC_NANG
+SET TenChucNang = N'Quản lý khoa',
+    MaForm = 'frmFaculty'
+WHERE MaChucNang = 2;
+
+UPDATE CHUC_NANG
+SET TenChucNang = N'Quản lý bộ môn',
+    MaForm = 'frmDepartment'
+WHERE MaChucNang = 3;
+
+UPDATE CHUC_NANG
+SET TenChucNang = N'Quản lý học phần',
+    MaForm = 'frmCourse'
+WHERE MaChucNang = 4;
+
+UPDATE CHUC_NANG
+SET TenChucNang = N'Phân công giảng dạy',
+    MaForm = 'frmTeachingAssignment'
+WHERE MaChucNang = 5;
+
+UPDATE CHUC_NANG
+SET TenChucNang = N'Quản lý người dùng',
+    MaForm = 'frmUserManagement'
+WHERE MaChucNang = 6;
+
+UPDATE CHUC_NANG
+SET TenChucNang = N'Thống kê khối lượng giảng dạy',
+    MaForm = 'frmTeachingWorkload'
+WHERE MaChucNang = 7;
+
+USE QuanLyGiangVien;
+GO
+
+INSERT INTO CHUC_NANG
+(
+    TenChucNang,
+    MaForm
+)
+VALUES
+(N'Quản lý phân quyền',            'frmRoleManagement'),
+(N'Báo cáo giảng viên',            'frmReportLecturer'),
+(N'Báo cáo phân công giảng dạy',   'frmReportTeachingAssignment'),
+(N'Thống kê biểu đồ',              'frmChartDashboard');
+GO
+
+USE QuanLyGiangVien;
+GO
+
+-- Xóa các chức năng thừa từ mã 8 trở lên
+DELETE FROM CHUC_NANG
+WHERE MaChucNang > 7;
+GO
+
+-- Đưa giá trị IDENTITY về 7
+DBCC CHECKIDENT ('CHUC_NANG', RESEED, 7);
+GO
+
+-- Thêm 4 chức năng mới
+INSERT INTO CHUC_NANG
+(
+    TenChucNang,
+    MaForm
+)
+VALUES
+(N'Quản lý phân quyền',            'frmRoleManagement'),
+(N'Báo cáo giảng viên',            'frmReportLecturer'),
+(N'Báo cáo phân công giảng dạy',   'frmReportTeachingAssignment'),
+(N'Thống kê biểu đồ',              'frmChartDashboard');
+GO
+
+-- Kiểm tra
+SELECT *
+FROM CHUC_NANG
+ORDER BY MaChucNang;
+
 INSERT INTO NGUOI_DUNG
 (
     TenDangNhap,
@@ -539,6 +634,23 @@ INSERT INTO NGUOI_DUNG
     MaVaiTro,
     TrangThai
 )
+
+/*
+QUY TẮC ĐẶT MẬT KHẨU 
+    Salt = chuỗi ngẫu nhiên 16 byte → lưu dạng HEX 32 ký tự
+    Hash = SHA-256(Password + Salt)
+    MatKhauHash = HEX 64 ký tự, chữ thường
+    MatKhauSalt = HEX 32 ký tự
+
+VÍ DỤ 
+Mật khẩu:
+Admin@123
+Salt:
+844be9c31650ad8b6b956becc5b195df
+Hash:
+f04bbb104b4c6cb3f710656d59d5d8751008ea81e59c83a841eb24b983e9c109
+*/
+
 VALUES
 (
     'admin',
@@ -566,6 +678,69 @@ VALUES
 );
 GO
 
+-- UPDATE LẠI PHẦN ADMIN VỀ MẬT KHẨU CHO DỮ LIỆU MẪU
+
+USE QuanLyGiangVien;
+GO
+
+UPDATE NGUOI_DUNG
+SET
+    MatKhauHash = 'f04bbb104b4c6cb3f710656d59d5d8751008ea81e59c83a841eb24b983e9c109',
+    MatKhauSalt = '844be9c31650ad8b6b956becc5b195df'
+WHERE TenDangNhap = 'admin';
+
+UPDATE NGUOI_DUNG
+SET
+    MatKhauHash = '1ffa46ed58906e3ff17ce2ff430d6d947aecfb913bae89ca5b328523fd9d84a2',
+    MatKhauSalt = '8791d4735cc9e29b14be1c02446b4b2d'
+WHERE TenDangNhap = 'nguyenvanan';
+
+UPDATE NGUOI_DUNG
+SET
+    MatKhauHash = 'c022f5dbc0d14537aed301eacd58fece3ae696b3cd091778b88aa5b5e341e873',
+    MatKhauSalt = '544037679d78c547626b2e6d9944b9f8'
+WHERE TenDangNhap = 'tranthibinh';
+
+GO
+USE QuanLyGiangVien;
+GO
+
+/*
+LOGIC PHÂN QUYỀN
+1. QUẢN TRỊ VIÊN
+   - Toàn quyền hệ thống.
+   - Được xem, thêm, sửa, xóa tất cả chức năng.
+2. GIÁO VỤ
+   - Quản lý nghiệp vụ đào tạo:
+     + Giảng viên
+     + Khoa
+     + Bộ môn
+     + Học phần
+     + Phân công giảng dạy
+   - Được xem, thêm, sửa.
+   - Không được xóa.
+   - Được xem các báo cáo và thống kê.
+   - Không được quản lý người dùng và phân quyền.
+3. GIẢNG VIÊN
+   - Chỉ được xem các thông tin liên quan đến
+     giảng dạy:
+     + Giảng viên
+     + Học phần
+     + Phân công giảng dạy
+     + Khối lượng giảng dạy
+   - Không được thêm, sửa, xóa.
+   - Phạm vi dữ liệu cá nhân sẽ được xử lý
+     trong logic C# LINQ.
+*/
+-- Xóa dữ liệu phân quyền cũ
+-- Chỉ sử dụng khi muốn tạo lại bảng PHAN_QUYEN từ đầu.
+DELETE FROM PHAN_QUYEN;
+GO
+/*
+QUẢN TRỊ VIÊN
+MaVaiTro = 1
+Toàn quyền tất cả 11 chức năng
+*/
 INSERT INTO PHAN_QUYEN
 (
     MaVaiTro,
@@ -576,35 +751,81 @@ INSERT INTO PHAN_QUYEN
     DuocXoa
 )
 VALUES
--- Quản trị viên: toàn quyền
-(1, 1, 1, 1, 1, 1),
-(1, 2, 1, 1, 1, 1),
-(1, 3, 1, 1, 1, 1),
-(1, 4, 1, 1, 1, 1),
-(1, 5, 1, 1, 1, 1),
-(1, 6, 1, 1, 1, 1),
-(1, 7, 1, 1, 1, 1),
+(1, 1, 1, 1, 1, 1), -- Quản lý giảng viên
+(1, 2, 1, 1, 1, 1), -- Quản lý khoa
+(1, 3, 1, 1, 1, 1), -- Quản lý bộ môn
+(1, 4, 1, 1, 1, 1), -- Quản lý học phần
+(1, 5, 1, 1, 1, 1), -- Phân công giảng dạy
+(1, 6, 1, 1, 1, 1), -- Quản lý người dùng
+(1, 7, 1, 1, 1, 1), -- Thống kê khối lượng giảng dạy
+(1, 8, 1, 1, 1, 1), -- Quản lý phân quyền
+(1, 9, 1, 1, 1, 1), -- Báo cáo giảng viên
+(1, 10, 1, 1, 1, 1), -- Báo cáo phân công giảng dạy
+(1, 11, 1, 1, 1, 1); -- Thống kê biểu đồ
+/*
+GIÁO VỤ
+MaVaiTro = 2
+Quản lý nghiệp vụ:
+1, 2, 3, 4, 5
+Xem + Thêm + Sửa
+Không được Xóa
+Được xem:
+7, 9, 10, 11
+*/
+INSERT INTO PHAN_QUYEN
+(
+    MaVaiTro,
+    MaChucNang,
+    DuocXem,
+    DuocThem,
+    DuocSua,
+    DuocXoa
+)
+VALUES
+(2, 1, 1, 1, 1, 0), -- Quản lý giảng viên
+(2, 2, 1, 1, 1, 0), -- Quản lý khoa
+(2, 3, 1, 1, 1, 0), -- Quản lý bộ môn
+(2, 4, 1, 1, 1, 0), -- Quản lý học phần
+(2, 5, 1, 1, 1, 0), -- Phân công giảng dạy
+(2, 7, 1, 0, 0, 0), -- Thống kê khối lượng giảng dạy
+(2, 9, 1, 0, 0, 0), -- Báo cáo giảng viên
+(2, 10, 1, 0, 0, 0), -- Báo cáo phân công giảng dạy
+(2, 11, 1, 0, 0, 0); -- Thống kê biểu đồ
+/*
+GIẢNG VIÊN
+MaVaiTro = 3
+Chỉ được Xem:
+1, 4, 5, 7
+*/
+INSERT INTO PHAN_QUYEN
+(
+    MaVaiTro,
+    MaChucNang,
+    DuocXem,
+    DuocThem,
+    DuocSua,
+    DuocXoa
+)
+VALUES
+(3, 1, 1, 0, 0, 0), -- Quản lý giảng viên
+(3, 4, 1, 0, 0, 0), -- Quản lý học phần
+(3, 5, 1, 0, 0, 0), -- Phân công giảng dạy
+(3, 7, 1, 0, 0, 0); -- Thống kê khối lượng giảng dạy
 
--- Giáo vụ
-(2, 1, 1, 1, 1, 0),
-(2, 2, 1, 1, 1, 0),
-(2, 3, 1, 1, 1, 0),
-(2, 4, 1, 1, 1, 0),
-(2, 5, 1, 1, 1, 0),
-(2, 7, 1, 0, 0, 0),
-
--- Giảng viên
-(3, 1, 1, 0, 0, 0),
-(3, 4, 1, 0, 0, 0),
-(3, 5, 1, 0, 0, 0),
-(3, 7, 1, 0, 0, 0);
 GO
 
-/*
-- Cột 1: Vai trò " 1 - Admin; 2 - Giáo vụ; 3 - Giảng viên"
-- Cột 2: quản lí " 1 - Giảng viên; 2 - Khoa;3 - Bộ môn; 4 - Học phần; 5 - Phân công; 6 - Người dùng; 7 - Báo cáo"
-- Cột 3 - 4 - 5 - 6: ứng với chức năng " xem - thêm - sửa - xóa (với 1 : là có quyền và 0 : là không có quyền)
-*/
+
+-- Kiểm tra toàn bộ phân quyền
+SELECT
+    MaVaiTro,
+    MaChucNang,
+    DuocXem,
+    DuocThem,
+    DuocSua,
+    DuocXoa
+FROM PHAN_QUYEN
+ORDER BY MaVaiTro, MaChucNang;
+GO
 
 INSERT INTO NHAT_KY_HE_THONG
 (
@@ -655,3 +876,23 @@ SELECT 'PHAN_QUYEN', COUNT(*) FROM PHAN_QUYEN
 UNION ALL
 SELECT 'NHAT_KY_HE_THONG', COUNT(*) FROM NHAT_KY_HE_THONG;
 GO
+
+--TEST LẠI MẬT KHẨU 
+SELECT
+    TenDangNhap,
+    MatKhauHash,
+    MatKhauSalt,
+    MaGV,
+    MaVaiTro,
+    TrangThai
+FROM NGUOI_DUNG;
+-- LƯU Ý cho Hào: Khi Hào làm frmLogin, code C# phải dùng đúng quy tắc: Password người dùng nhập + MatKhauSalt -> SHA-256 -> HEX chữ thường -> so sánh MatKhauHash
+
+/*
+NHỮNG PHẦN CẦN KIỂM TRA LẠI 
+1. Insert thêm dữ liệu trưởng khoa 
+2. frmUserManagement và frmRoleManagement chưa có mã riêng
+3. chỉnh sửa lại mk dạng hash & salt 
+4. frmRoleManagement trong database 
+5. chỉnh tên form tiếng việt thành tiếng anh 
+*/
