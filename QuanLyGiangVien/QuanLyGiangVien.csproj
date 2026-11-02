@@ -47,6 +47,70 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HoangFormHelper.cs" />
+    <Compile Include="frmFaculty.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmFaculty.Designer.cs">
+      <DependentUpon>frmFaculty.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="frmFaculty.resx">
+      <DependentUpon>frmFaculty.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="frmDepartment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmDepartment.Designer.cs">
+      <DependentUpon>frmDepartment.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="frmDepartment.resx">
+      <DependentUpon>frmDepartment.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="frmLecturer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLecturer.Designer.cs">
+      <DependentUpon>frmLecturer.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="frmLecturer.resx">
+      <DependentUpon>frmLecturer.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="frmDegree.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmDegree.Designer.cs">
+      <DependentUpon>frmDegree.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="frmDegree.resx">
+      <DependentUpon>frmDegree.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="frmPosition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPosition.Designer.cs">
+      <DependentUpon>frmPosition.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="frmPosition.resx">
+      <DependentUpon>frmPosition.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="frmSpecialization.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSpecialization.Designer.cs">
+      <DependentUpon>frmSpecialization.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="frmSpecialization.resx">
+      <DependentUpon>frmSpecialization.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="frmCourse.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCourse.Designer.cs">
+      <DependentUpon>frmCourse.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="frmCourse.resx">
+      <DependentUpon>frmCourse.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
