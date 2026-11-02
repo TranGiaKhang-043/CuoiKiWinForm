@@ -12,11 +12,14 @@ namespace QuanLyGiangVien
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            if (args.Any(arg => string.Equals(arg, "--hao", StringComparison.OrdinalIgnoreCase)))
+                Application.Run(new frmLogin());
+            else
+                Application.Run(new Form1());
         }
     }
 }
